@@ -14,7 +14,7 @@ namespace MicroRabbit.Infra.IoC
     {
         public static void RegisterServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IEventBus, RabbitMqBus>();
+            services.AddScoped<IEventBus, RabbitMqBus>();
 
             services.Configure<RabbitMqSettings>(c => configuration.GetSection("RabbitMqSettings"));
 

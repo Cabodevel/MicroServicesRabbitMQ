@@ -2,6 +2,7 @@
 using MicroRabbit.Domain.Core.Bus;
 using MicroRabbit.Domain.Core.Commands;
 using MicroRabbit.Domain.Core.Events;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -13,16 +14,31 @@ namespace MicroRabbit.Infra.Bus
     public sealed class RabbitMqBus : IEventBus
     {
         private readonly RabbitMqSettings _settings;
+
         private readonly IMediator _mediator;
-        private readonly new Dictionary<string, List<Type>> _handlers;
+
+        private readonly Dictionary<string, List<Type>> _handlers;
+
         private readonly List<Type> _eventTypes;
-        public RabbitMqBus(IMediator mediator,
-            IOptions<RabbitMqSettings> settings)
+
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+
+
+
+        public RabbitMqBus(IMediator mediator, IServiceScopeFactory serviceScopeFactory, IOptions<RabbitMqSettings> rabbitMQSettings)
+
         {
+
             _mediator = mediator;
-            _settings = settings.Value;
+
+            _serviceScopeFactory = serviceScopeFactory;
+
             _handlers = new Dictionary<string, List<Type>>();
+
             _eventTypes = new List<Type>();
+
+            _settings = rabbitMQSettings.Value;
+
         }
 
         public void Publish<T>(T @event) where T : Event
