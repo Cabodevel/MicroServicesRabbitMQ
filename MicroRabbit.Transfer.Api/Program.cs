@@ -1,7 +1,11 @@
 using MediatR;
 using MicroRabbit.Infra.Bus;
 using MicroRabbit.Infra.IoC;
+using MicroRabbit.Transfer.Application.Interfaces;
+using MicroRabbit.Transfer.Application.Services;
 using MicroRabbit.Transfer.Data.Context;
+using MicroRabbit.Transfer.Data.Repository;
+using MicroRabbit.Transfer.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -24,6 +28,12 @@ builder.Services.AddDbContext<TransferDbContext>(options =>
 builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMqSettings"));
 
 builder.Services.RegisterServices(builder.Configuration);
+
+builder.Services.AddScoped<ITransferService, TransferService>();
+
+builder.Services.AddScoped<ITransferRepository, TransferRepository>();
+
+builder.Services.AddScoped<TransferDbContext>();
 
 builder.Services.AddCors(options =>
 {

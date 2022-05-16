@@ -15,6 +15,7 @@ using MicroRabbit.Transfer.Data.Repository;
 using MicroRabbit.Transfer.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace MicroRabbit.Infra.IoC
 {
@@ -22,20 +23,11 @@ namespace MicroRabbit.Infra.IoC
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IRequestHandler<CreateTransferCommand, bool>, TransferCommandHandler>();
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddScoped<IEventBus, RabbitMqBus>();
 
-            //Application
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<ITransferService, TransferService>();
-
-            //Data
-            services.AddScoped<IAccountRepository, AccountRepository>();
-            services.AddScoped<ITransferRepository, TransferRepository>();
-
-            services.AddScoped<BankingDbContext>();
-            services.AddScoped<TransferDbContext>();
+            
 
             return services;
         }
