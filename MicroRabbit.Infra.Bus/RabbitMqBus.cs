@@ -23,9 +23,9 @@ namespace MicroRabbit.Infra.Bus
 
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
-
-
-        public RabbitMqBus(IMediator mediator, IServiceScopeFactory serviceScopeFactory, IOptions<RabbitMqSettings> rabbitMQSettings)
+        public RabbitMqBus(IMediator mediator,
+            IServiceScopeFactory serviceScopeFactory, 
+            IOptions<RabbitMqSettings> rabbitMQSettings)
 
         {
 
@@ -139,11 +139,13 @@ namespace MicroRabbit.Infra.Bus
         {
             if (_handlers.ContainsKey(eventName))
             {
+                using var scope = _serviceScopeFactory.CreateScope();
+
                 var subscriptions = _handlers[eventName];
 
                 foreach (var subscription in subscriptions)
                 {
-                    var handler = Activator.CreateInstance(subscription);
+                    var handler = scope.ServiceProvider.GetService(subscription);
 
                     if (handler is null)
                     {
