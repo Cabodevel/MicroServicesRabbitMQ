@@ -1,7 +1,10 @@
-﻿using MicroRabbit.Api.Application.Interfaces;
+﻿using MediatR;
+using MicroRabbit.Api.Application.Interfaces;
 using MicroRabbit.Api.Application.Services;
 using MicroRabbit.Banking.Data.Context;
 using MicroRabbit.Banking.Data.Repository;
+using MicroRabbit.Banking.Domain.CommandHandlers;
+using MicroRabbit.Banking.Domain.Commands;
 using MicroRabbit.Banking.Domain.Interfaces;
 using MicroRabbit.Domain.Core.Bus;
 using MicroRabbit.Infra.Bus;
@@ -10,13 +13,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MicroRabbit.Infra.IoC
 {
-    public class DependencyContainer
+    public static class DependencyContainer
     {
-        public static void RegisterServices(IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IEventBus, RabbitMqBus>();
+            services.AddScoped<IRequestHandler<CreateTransferCommand, bool>, TransferCommandHandler>();
 
-            services.Configure<RabbitMqSettings>(c => configuration.GetSection("RabbitMqSettings"));
+            services.AddScoped<IEventBus, RabbitMqBus>();
 
             //Application
             services.AddScoped<IAccountService, AccountService>();
@@ -25,6 +28,8 @@ namespace MicroRabbit.Infra.IoC
             services.AddScoped<IAccountRepository, AccountRepository>();
 
             services.AddScoped<BankingDbContext>();
+
+            return services;
         }
     }
 }

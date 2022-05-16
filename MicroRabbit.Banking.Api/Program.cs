@@ -1,5 +1,6 @@
 using MediatR;
 using MicroRabbit.Banking.Data.Context;
+using MicroRabbit.Infra.Bus;
 using MicroRabbit.Infra.IoC;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -20,8 +21,14 @@ builder.Services.AddDbContext<BankingDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BankingDbConnection"));
 });
 
-DependencyContainer.RegisterServices(builder.Services, builder.Configuration);
+builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMqSettings"));
 
+builder.Services.RegisterServices(builder.Configuration);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());//Only for testing purposes
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -34,7 +41,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
+app.UseCors("CorsPolicy");
 app.MapControllers();
 
 app.Run();
