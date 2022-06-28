@@ -101,6 +101,7 @@ namespace MicroRabbit.Infra.Bus
                 HostName = _settings.HostName,
                 UserName = _settings.UserName,
                 Password = _settings.Password,
+                Port = 5672,
                 DispatchConsumersAsync = true
             };
 
